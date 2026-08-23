@@ -1,0 +1,22 @@
+package ru.yandex.practicum.sleeptracker;
+import java.time.Duration;
+import java.util.List;
+import java.util.function.Function;
+
+public class AverageSleepDurationAnalysis
+        implements Function<List<SleepingSession>, SleepAnalysisResult> {
+
+    @Override
+    public SleepAnalysisResult apply(List<SleepingSession> sessions) {
+        double averageDuration = sessions.stream()
+                .mapToLong(session -> Duration.between(
+                        session.getStart(),
+                        session.getEnd()
+                ).toMinutes())
+                .average()
+                .orElse(0.0);
+        return new SleepAnalysisResult(
+                "Средняя продолжительность сна, мин",
+                averageDuration);
+    }
+}
