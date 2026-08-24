@@ -11,6 +11,9 @@ public class ChronotypeAnalysis
     public SleepAnalysisResult apply(List<SleepingSession> sessions) {
 
         List<SleepingSession> nightSessions = sessions.stream()
+                .filter(session -> session != null
+                        && session.getStart() != null
+                        && session.getEnd() != null)
                 .filter(this::isNightSession)
                 .toList();
 

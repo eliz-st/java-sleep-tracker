@@ -13,14 +13,21 @@ public class SleeplessNightsAnalysis
     @Override
     public SleepAnalysisResult apply(List<SleepingSession> sessions) {
 
-        if (sessions.isEmpty()) {
+        List<SleepingSession> validSessions = sessions.stream()
+                .filter(session -> session != null
+                        && session.getStart() != null
+                        && session.getEnd() != null)
+                .toList();
+
+        if (validSessions.isEmpty()) {
             return new SleepAnalysisResult(
                     "Количество бессонных ночей",
                     0L);
         }
 
-        SleepingSession firstSession = sessions.get(0);
+        SleepingSession firstSession = validSessions.get(0);
         LocalDateTime firstStart = firstSession.getStart();
+
         LocalDate firstNightDate;
 
         if (firstStart.toLocalTime().isAfter(LocalTime.NOON)) {
@@ -30,8 +37,10 @@ public class SleeplessNightsAnalysis
         }
 
         SleepingSession lastSession =
-                sessions.get(sessions.size() - 1);
+                validSessions.get(validSessions.size() - 1);
+
         LocalDateTime lastEnd = lastSession.getEnd();
+
         LocalDate lastNightDate =
                 lastEnd.toLocalDate();
 
@@ -40,8 +49,9 @@ public class SleeplessNightsAnalysis
                         date -> !date.isAfter(lastNightDate),
                         date -> date.plusDays(1))
                 .filter(nightDate ->
-                        sessions.stream()
-                                .noneMatch(session -> sessionIntersectsNight(session, nightDate)))
+                        validSessions.stream()
+                                .noneMatch(session ->
+                                        sessionIntersectsNight(session, nightDate)))
                 .count();
 
         return new SleepAnalysisResult(
@@ -55,6 +65,7 @@ public class SleeplessNightsAnalysis
 
         LocalDateTime nightStart =
                 nightDate.atStartOfDay();
+
         LocalDateTime nightEnd =
                 nightDate.atTime(6, 0);
 

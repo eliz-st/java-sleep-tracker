@@ -21,6 +21,12 @@ public class SleepTrackerApp {
                     new ChronotypeAnalysis());
 
     public static void main(String[] args) throws IOException {
+
+        if (args.length == 0 || args[0] == null || args[0].isBlank()) {
+            System.out.println("Не указан путь к файлу с данными о сне.");
+            return;
+        }
+
         Path filePath = Path.of(args[0]);
         List<String> lines = Files.readAllLines(filePath);
         List<SleepingSession> sessions = lines.stream()
@@ -46,7 +52,6 @@ public class SleepTrackerApp {
                 LocalDateTime.parse(parts[1], formatter);
         SleepQuality quality =
                 SleepQuality.valueOf(parts[2]);
-
         return new SleepingSession(start, end, quality);
     }
 }
